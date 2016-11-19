@@ -23,7 +23,6 @@ $(".genderIcons").on("click", "div", function() {
 	});
 
 	$(this).css(selectStyles);
-	console.log(gender)
 });
 
 function validate(gender, minAge, maxAge) {
@@ -69,7 +68,8 @@ $(".playBtn").click(function() {
 			url: "/game",
 			data: {minAge: minAge, maxAge: maxAge, gender: gender},
 			success: (res) => {
-
+				const person = JSON.parse(res);
+				console.log(person);
 			}
 		});
 	} else {
