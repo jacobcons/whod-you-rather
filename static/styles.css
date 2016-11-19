@@ -1,3 +1,26 @@
-h1 a {
-  color: #000;
+body {
+  font-family: sans-serif;
+}
+.genderIcons div {
+  padding: 5px;
+  margin: 10px 0;
+  display: inline-block;
+  background-color: #ccc;
+}
+.genderIcons div:hover {
+  cursor: pointer;
+}
+.btn {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+  margin: 20px 0;
+  background-color: blue;
+  font-size: 30px;
+}
+.btn:hover {
+  background-color: #6666ff;
+  cursor: pointer;
 }
