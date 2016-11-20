@@ -6,12 +6,13 @@ const redis = new Redis();
 
 const apiKey = "95e41b5cdaed3bd656f8d298f92eac1b";
 
-function assimilate() {
+function assimilate(pageN) {
 	/*
-		The person/popular endpoint provides data on the most popular actors including their name and films known for. The id gathered from this endpoint is then used to make a request to the person/id endpoint to gather additional data such as the actor's birthday, gender and place_of_birth.
+		The person/popular endpoint provides data on the most popular actors including their info on films known for. The id gathered from this endpoint is then used to make a request to the person/id endpoint to gather additional data such as the actor's birthday, gender and place_of_birth.
 	*/
 	let popular = got("https://api.themoviedb.org/3/person/popular?" + queryString.stringify({
-		api_key: apiKey
+		api_key: apiKey,
+		page: pageN
 	})).then(res => {
 		return res;
 	});
@@ -36,13 +37,19 @@ function assimilate() {
 			return JSON.parse(a.body);
 		})
 
-		console.log(popularActors);
+		for (i = 0; i < popularActors.length; i++) {
+			mappedActors[i].birthYear = mappedActors[i].birthday.substring(0,4); //birthday stored in yyyy-mm-dd format
+			mappedActors[i].known_for = popularActors[i].known_for.map(knownFor => knownFor.poster_path); //app only requires the movie posters
+		}
 		console.log(mappedActors);
 
 	});
 }
 
-assimilate();
+
+assimilate(2);
+
+
 
 /*got("https://api.themoviedb.org/3/person/popular?" + queryString.stringify({
 	api_key: apiKey
