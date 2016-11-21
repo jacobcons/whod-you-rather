@@ -14,14 +14,12 @@ function assimilate(pageN) {
 		api_key: apiKey,
 		page: pageN
 	})).then(res => {
-		return res;
+		return JSON.parse(res.body).results;
 	});
 
 	let person = popular.then(res => {
-		const popularActors = JSON.parse(res.body).results;
-
 		// Map each actor to the data at the person/id endpoint in order to gather additional information
-		const mappedActors = popularActors.map(a => {
+		const mappedActors = res.map(a => {
 			return got("https://api.themoviedb.org/3/person/" + a.id + "?" + queryString.stringify({
 				api_key: apiKey
 			}))
@@ -32,7 +30,6 @@ function assimilate(pageN) {
 
 	return Promise.join(popular, person, (popularActors, mappedActors) => {
 		// Join promises to have access to all actor data in scope
-		popularActors = JSON.parse(popularActors.body).results;
 		mappedActors = mappedActors.map(a => {
 			return JSON.parse(a.body);
 		})
