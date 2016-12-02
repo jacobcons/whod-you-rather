@@ -5,70 +5,51 @@ const Promise = require('bluebird');
 const redis = new Redis();
 
 const apiKey = "95e41b5cdaed3bd656f8d298f92eac1b";
+const msInYear = 1000*60*60*24*365.25;
+const totalPages = 1;
+let pages = [];
 
-function assimilate(pageN) {
-	/*
-		The person/popular endpoint provides data on the most popular actors including their info on films known for. The id gathered from this endpoint is then used to make a request to the person/id endpoint to gather additional data such as the actor's birthday, gender and place_of_birth.
-	*/
-	let popular = got("https://api.themoviedb.org/3/person/popular?" + queryString.stringify({
+for (let pageN = 1; pageN <= totalPages; pageN++) {
+	let page = got("https://api.themoviedb.org/3/person/popular?" + queryString.stringify({
 		api_key: apiKey,
 		page: pageN
-	})).then(res => {
-		return JSON.parse(res.body).results;
-	});
+	}));
 
-	let person = popular.then(res => {
-		// Map each actor to the data at the person/id endpoint in order to gather additional information
-		const mappedActors = res.map(a => {
-			return got("https://api.themoviedb.org/3/person/" + a.id + "?" + queryString.stringify({
-				api_key: apiKey
-			}))
-		});
-
-		return Promise.all(mappedActors);
-	});
-
-	return Promise.join(popular, person, (popularActors, mappedActors) => {
-		// Join promises to have access to all actor data in scope
-		mappedActors = mappedActors.map(a => {
-			return JSON.parse(a.body);
-		})
-
-		for (i = 0; i < popularActors.length; i++) {
-			mappedActors[i].birthYear = mappedActors[i].birthday.substring(0,4); //birthday stored in yyyy-mm-dd format
-			mappedActors[i].known_for = popularActors[i].known_for.map(knownFor => knownFor.poster_path); //app only requires the movie posters
-		}
-		console.log(mappedActors);
-
-	});
+	pages.push(page);
 }
 
+// When http responses to each page has been made
+Promise.all(pages).then(res => {
+	pages = res.map(page => {
+		return JSON.parse(page.body).results; //results is an array of data for each actor on the corresponding page
+	});
 
-assimilate(2);
-
-
-
-/*got("https://api.themoviedb.org/3/person/popular?" + queryString.stringify({
-	api_key: apiKey
-}))
-	.then(res => {
-		const popularActors = JSON.parse(res.body).results;
-		const x = 2;
-
-		const mappedActors = popularActors.map(a => {
-			return got("https://api.themoviedb.org/3/person/" + a.id + "?" + queryString.stringify({
-				api_key: apiKey
-			}))
+	// Map 2d array pages such that each actor has data from the person/{actorid} endpoint and not the person/popular endpoint
+	let actorPages = pages.map(page => {
+			return page.map(actor => {
+				return got("https://api.themoviedb.org/3/person/" + actor.id + "?api_key=" + apiKey);
 		});
+	});
 
-		return Promise.all(mappedActors);
-	})
-	.then(mappedActors => {
-		let actors = mappedActors.map(a => {
-			return JSON.parse(a.body);
+	// Pass each array inside of actorPages to Promise.all since promises are resolved here
+	return Promise.all( actorPages.map(actorPage => Promise.all(actorPage)) );
+}).then(actorPages => {
+	// ActorPages is an array of arrays containing the actor data for actors on each page
+	actorPages = actorPages.map(actorPage => {
+		return actorPage.map(actor => {
+			return JSON.parse(actor.body); // Map each actor to JSON
 		});
-		console.log(x);
-	})
-	.catch(err => {
-		console.log(err.res.body);
-	})*/
+	});
+
+	actorPages.forEach((actorPage, pageN) => {
+		actorPage.forEach((actor, actorN)  => {
+			if (actor.birthday == "") {
+				delete actorPages[pageN][actorN];
+			}
+			let currentDate = new Date();
+			let birthDate = new Date(actor.birthday);
+			actor.age = Math.floor((currentDate - birthDate) / msInYear);
+			actor.known_for = pages[pageN][actorN]; // Store details from person/popular endpoint in actorPages array
+		});
+	});
+});
