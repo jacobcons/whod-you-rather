@@ -43,13 +43,16 @@ Promise.all(pages).then(res => {
 
 	actorPages.forEach((actorPage, pageN) => {
 		actorPage.forEach((actor, actorN)  => {
-			if (actor.birthday == "") {
-				delete actorPages[pageN][actorN];
+			if (actor.birthday != "") {
+				let currentDate = new Date();
+				let birthDate = new Date(actor.birthday);
+				actor.age = Math.floor((currentDate - birthDate) / msInYear);
+				actor.known_for = pages[pageN][actorN]; // Store details from person/popular endpoint in actorPages array
+
+				//redis
 			}
-			let currentDate = new Date();
-			let birthDate = new Date(actor.birthday);
-			actor.age = Math.floor((currentDate - birthDate) / msInYear);
-			actor.known_for = pages[pageN][actorN]; // Store details from person/popular endpoint in actorPages array
 		});
 	});
+}).catch(err => {
+	console.log(err);
 });
