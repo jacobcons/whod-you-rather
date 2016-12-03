@@ -18,7 +18,6 @@ for (let pageN = 1; pageN <= totalPages; pageN++) {
 	pages.push(page);
 }
 
-// When http responses to each page has been made
 Promise.all(pages).then(res => {
 	pages = res.map(page => {
 		return JSON.parse(page.body).results; //results is an array of data for each actor on the corresponding page
