@@ -2,32 +2,45 @@ const got = require("got");
 const Redis = require("ioredis");
 const queryString = require('query-string');
 const Promise = require('bluebird');
+const pThrottle = require('p-throttle');
 const redis = new Redis();
 
 const apiKey = "95e41b5cdaed3bd656f8d298f92eac1b";
 const msInYear = 1000*60*60*24*365.25;
-const totalPages = 1;
 let pages = [];
 
-for (let pageN = 1; pageN <= totalPages; pageN++) {
-	let page = got("https://api.themoviedb.org/3/person/popular?" + queryString.stringify({
-		api_key: apiKey,
-		page: pageN
-	}));
+const throttleTotalPages = pThrottle(() => {
+	return got("https://api.themoviedb.org/3/person/popular?api_key=" + apiKey);
+}, 1, 250);
 
-	pages.push(page);
-}
+throttleTotalPages().then(res => {
+	//Total number of pages is stored at person/popular endpoint
+	const totalPages = JSON.parse(res.body).total_pages;
 
-Promise.all(pages).then(res => {
+	const page = pThrottle((pageN) => {
+		return got( "https://api.themoviedb.org/3/person/popular?" + queryString.stringify({ api_key: apiKey, page: pageN}) );
+	}, 4, 1000);
+
+	for (let pageN = 1; pageN <= totalPages; pageN++) {
+			pages.push( page(pageN) );
+	}
+
+	return Promise.all(pages);
+}).then(res => {
 	pages = res.map(page => {
 		return JSON.parse(page.body).results; //results is an array of data for each actor on the corresponding page
 	});
 
 	// Map 2d array pages such that each actor has data from the person/{actorid} endpoint and not the person/popular endpoint
-	let actorPages = pages.map(page => {
-			return page.map(actor => {
-				return got("https://api.themoviedb.org/3/person/" + actor.id + "?api_key=" + apiKey);
-		});
+
+	const fetchActor = pThrottle((actorId) => {
+		return got("https://api.themoviedb.org/3/person/" + actorId + "?api_key=" + apiKey);
+	}, 4, 1000);
+
+	const actorPages = pages.map(page => {
+				return page.map(actor => {
+					return fetchActor(actor.id);
+			});
 	});
 
 	// Pass each array inside of actorPages to Promise.all since promises are resolved here
@@ -39,10 +52,10 @@ Promise.all(pages).then(res => {
 			return JSON.parse(actor.body); // Map each actor to JSON
 		});
 	});
-
+	let count = 0;
 	actorPages.forEach((actorPage, pageN) => {
 		actorPage.forEach((actor, actorN)  => {
-			if (actor.birthday != "") {
+			if (actor.birthday != null && actor.profile_path != null && actor.gender != 0) {
 				let currentDate = new Date();
 				let birthDate = new Date(actor.birthday);
 				actor.age = Math.floor((currentDate - birthDate) / msInYear);
@@ -50,8 +63,10 @@ Promise.all(pages).then(res => {
 
 				//redis
 			}
+			count++;
 		});
 	});
+	console.log(count);
 }).catch(err => {
 	console.log(err);
 });
