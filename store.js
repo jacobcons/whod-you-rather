@@ -9,17 +9,17 @@ const apiKey = "95e41b5cdaed3bd656f8d298f92eac1b";
 const msInYear = 1000*60*60*24*365.25;
 let pages = [];
 
-const throttleTotalPages = pThrottle(() => {
+const getTotalPages = pThrottle(() => {
 	return got("https://api.themoviedb.org/3/person/popular?api_key=" + apiKey);
-}, 1, 250);
+}, 1, 251);
 
-throttleTotalPages().then(res => {
+getTotalPages().then(res => {
 	//Total number of pages is stored at person/popular endpoint
 	const totalPages = JSON.parse(res.body).total_pages;
 
 	const page = pThrottle((pageN) => {
 		return got( "https://api.themoviedb.org/3/person/popular?" + queryString.stringify({ api_key: apiKey, page: pageN}) );
-	}, 4, 1000);
+	}, 1, 251);
 
 	for (let pageN = 1; pageN <= totalPages; pageN++) {
 			pages.push( page(pageN) );
@@ -35,7 +35,7 @@ throttleTotalPages().then(res => {
 
 	const fetchActor = pThrottle((actorId) => {
 		return got("https://api.themoviedb.org/3/person/" + actorId + "?api_key=" + apiKey);
-	}, 4, 1000);
+	}, 1, 251);
 
 	const actorPages = pages.map(page => {
 				return page.map(actor => {
@@ -55,7 +55,7 @@ throttleTotalPages().then(res => {
 	let count = 0;
 	actorPages.forEach((actorPage, pageN) => {
 		actorPage.forEach((actor, actorN)  => {
-			if (actor.birthday != null && actor.profile_path != null && actor.gender != 0) {
+			if (actor.birthday != null && actor.profile_path != null) {
 				let currentDate = new Date();
 				let birthDate = new Date(actor.birthday);
 				actor.age = Math.floor((currentDate - birthDate) / msInYear);
