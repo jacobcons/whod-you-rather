@@ -11,7 +11,7 @@ let pages = [];
 
 const getTotalPages = pThrottle(() => {
 	return got("https://api.themoviedb.org/3/person/popular?api_key=" + apiKey);
-}, 1, 251);
+}, 1, 250);
 
 getTotalPages().then(res => {
 	//Total number of pages is stored at person/popular endpoint
@@ -19,7 +19,7 @@ getTotalPages().then(res => {
 
 	const page = pThrottle((pageN) => {
 		return got( "https://api.themoviedb.org/3/person/popular?" + queryString.stringify({ api_key: apiKey, page: pageN}) );
-	}, 1, 251);
+	}, 1, 250);
 
 	for (let pageN = 1; pageN <= totalPages; pageN++) {
 			pages.push( page(pageN) );
@@ -35,7 +35,7 @@ getTotalPages().then(res => {
 
 	const fetchActor = pThrottle((actorId) => {
 		return got("https://api.themoviedb.org/3/person/" + actorId + "?api_key=" + apiKey);
-	}, 1, 251);
+	}, 1, 250);
 
 	const actorPages = pages.map(page => {
 				return page.map(actor => {
@@ -52,7 +52,7 @@ getTotalPages().then(res => {
 			return JSON.parse(actor.body); // Map each actor to JSON
 		});
 	});
-	let count = 0;
+
 	actorPages.forEach((actorPage, pageN) => {
 		actorPage.forEach((actor, actorN)  => {
 			if (actor.birthday != null && actor.profile_path != null) {
@@ -63,10 +63,8 @@ getTotalPages().then(res => {
 
 				//redis
 			}
-			count++;
 		});
 	});
-	console.log(count);
 }).catch(err => {
 	console.log(err);
 });
