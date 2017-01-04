@@ -34,21 +34,9 @@ $(window).on('load', function() {
 		}, 'xml');
 	});
 
-	$(".info-tooltip").tooltip({
-
+	$(".info-btn").tooltip({
+		track: true
 	});
-
-	function openToolTip() {
-		$(".info-tooltip").tooltip("open");
-		$(this).one("click", closeToolTip);
-	}
-
-	function closeToolTip() {
-		$(".info-tooltip").tooltip("close");
-		$(this).one("click", openToolTip);
-	}
-
-	$(".info-btn").one("click", openToolTip);
 
 
 	let gender = 0;
@@ -116,7 +104,11 @@ $(window).on('load', function() {
 	}
 
 	function writeToLabel(label, str) {
-		$(label).html(str);
+		if (str != "100") {
+			$(label).html(str);
+		} else {
+			$(label).html("100+");
+		}
 	}
 
 	function positionLabel(handle, label) {
@@ -133,8 +125,8 @@ $(window).on('load', function() {
 	$(".age-slider").slider({
 		range: true,
 		min: 18,
-		max: 65,
-		values: [18, 65],
+		max: 100,
+		values: [18, 100],
 		slide: function(event, ui) {
 			let delay = function() {
 				let handleIndex = ui.handleIndex;
@@ -171,8 +163,8 @@ $(window).on('load', function() {
 
 		// validate age slider
 		if (minAge > maxAge ||
-			minAge < 16 ||
-			maxAge > 65 ||
+			minAge < 18 ||
+			maxAge > 100 ||
 			minAge !== parseInt(minAge, 10) ||
 			maxAge !== parseInt(maxAge, 10))
 		{
@@ -193,11 +185,14 @@ $(window).on('load', function() {
 		let maxAge = $(".age-slider").slider("values", 1);
 
 		if (validate(gender, minAge, maxAge)) {
+			$(this).off("click");
 			$.ajax({
 				url: "/game",
 				data: {minAge: minAge, maxAge: maxAge, gender: gender},
 				success: (res) => {
 					console.log(JSON.parse(res));
+					$(".form-container").fadeOut(2200);
+					$("body").append("<pre>" + JSON.stringify(JSON.parse(res), null, 2) + "</pre>");
 				}
 			});
 		} else {

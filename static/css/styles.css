@@ -127,11 +127,6 @@ header .info-btn {
 .ui-slider-handle {
   z-index: 1;
 }
-.info-tooltip {
-  positon: absolute;
-  top: 200%;
-  left: 0;
-}
 #min-handle-label,
 #max-handle-label {
   position: absolute;
