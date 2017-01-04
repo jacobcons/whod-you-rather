@@ -29,16 +29,16 @@ body {
 }
 .circular-btn {
   border-radius: 50%;
-  width: 100px;
-  height: 100px;
   text-align: center;
-  line-height: 100px;
   margin: 20px 0;
   font-family: lust;
   font-size: 2.3rem;
 }
 .circular-btn:hover {
   cursor: pointer;
+  -webkit-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
 }
 .white-box {
   background-color: #fff;
@@ -58,6 +58,11 @@ body {
 .info-btn {
   background-color: #2d2e55;
   color: #fff;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  font-size: 2.3rem;
+  position: relative;
 }
 header .info-btn {
   float: right;
@@ -89,8 +94,12 @@ header .info-btn {
 .play-btn {
   background-color: #fff;
   margin: 0 auto;
+  width: 125px;
+  height: 125px;
+  line-height: 125px;
+  font-size: 2.55rem;
 }
-.arrow-box {
+.handle-label-container {
   position: relative;
   background: #fff;
   width: 44px;
@@ -100,7 +109,7 @@ header .info-btn {
   -moz-box-shadow: 0px 5px 1px 0px rgba(0, 0, 0, 0.16);
   box-shadow: 0px 5px 1px 0px rgba(0, 0, 0, 0.16);
 }
-.arrow-box:after {
+.handle-label-container:after {
   bottom: 100%;
   left: 50%;
   border: solid transparent;
@@ -117,6 +126,11 @@ header .info-btn {
 }
 .ui-slider-handle {
   z-index: 1;
+}
+.info-tooltip {
+  positon: absolute;
+  top: 200%;
+  left: 0;
 }
 #min-handle-label,
 #max-handle-label {

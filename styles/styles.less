@@ -1,7 +1,8 @@
-@btn-size: 100px;
+@play-btn-size: 125px;
+@info-btn-size: 100px;
 @gender-icon-width: 5.4em;
-@arrow-box-size: 44px;
-@arrow-box-color: #fff;
+@handle-label-container-size: 44px;
+@handle-label-container-color: #fff;
 
 @font-face {
 	font-family: lust;
@@ -34,16 +35,16 @@ body {
 }
 .circular-btn {
 	border-radius: 50%;
-	width: @btn-size;
-	height: @btn-size;
 	text-align: center;
-	line-height: @btn-size;
 	margin: 20px 0;
 	font-family: lust;
 	font-size: 2.3rem;
 
 	&:hover {
 		cursor: pointer;
+		-webkit-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
+		-moz-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
+		box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
 	}
 }
 .white-box {
@@ -65,6 +66,11 @@ body {
 .info-btn {
 	background-color: #2d2e55;
 	color: #fff;
+	width: @info-btn-size;
+	height: @info-btn-size;
+	line-height: @info-btn-size;
+	font-size: 2.3rem;
+	position: relative;
 }
 header .info-btn {
 	float: right;
@@ -97,18 +103,22 @@ header .info-btn {
 .play-btn {
 	background-color: #fff;
 	margin: 0 auto;
+	width: @play-btn-size;
+	height: @play-btn-size;
+	line-height: @play-btn-size;
+	font-size: 2.55rem;
 }
-.arrow-box {
+.handle-label-container {
 	position: relative;
-	background: @arrow-box-color;
-	width: @arrow-box-size;
-	height: @arrow-box-size;
+	background: @handle-label-container-color;
+	width: @handle-label-container-size;
+	height: @handle-label-container-size;
 	border-radius: 7px;
 	-webkit-box-shadow: 0px 5px 1px 0px rgba(0,0,0,0.16);
 	-moz-box-shadow: 0px 5px 1px 0px rgba(0,0,0,0.16);
 	box-shadow: 0px 5px 1px 0px rgba(0,0,0,0.16);
 }
-.arrow-box:after {
+.handle-label-container:after {
 	bottom: 100%;
 	left: 50%;
 	border: solid transparent;
@@ -118,18 +128,23 @@ header .info-btn {
 	position: absolute;
 	pointer-events: none;
 	border-color: rgba(255, 255, 255, 0);
-	border-bottom-color: @arrow-box-color;
-	border-width: (@arrow-box-size / 4);
-	margin-left: (@arrow-box-size / -4);
+	border-bottom-color: @handle-label-container-color;
+	border-width: (@handle-label-container-size / 4);
+	margin-left: (@handle-label-container-size / -4);
 	z-index: 2;
 }
 .ui-slider-handle {
 	z-index: 1;
 }
+.info-tooltip {
+	positon: absolute;
+	top: 200%;
+	left: 0;
+}
 #min-handle-label, #max-handle-label {
 	position: absolute;
 	text-align: center;
-	line-height: @arrow-box-size;
+	line-height: @handle-label-container-size;
 }
 @media (max-width: 460px) {
 	.form-label {

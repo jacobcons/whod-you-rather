@@ -10,38 +10,41 @@
 	<div class="wrapper">
 		<header class="clearfix">
 			<h1 class="logo">Who'd you rather?</h1>
-			<div class="circular-btn info-btn">Info</div>
+			<div class="circular-btn info-btn">Info<a class="info-tooltip" title="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus volutpat, ipsum luctus bibendum sodales, turpis eros sodales dui, sed mollis est neque ut ex."></a></div>
+
 		</header>
 	</div>
 
 	<div class="form-container">
 		<div class="wrapper">
-			<div class="white-box">
-				<div class="l-row">
-					<h2 class="form-label">Gender</h2>
+			<div class="form">
+				<div class="white-box">
+					<div class="l-row">
+						<h2 class="form-label">Gender</h2>
 
-					<div class="gender-icons">
-						<div class="svg-container male">
-							<img src="images/male.svg" class="svg gender-icon ">
+						<div class="gender-icons">
+							<div class="svg-container male">
+								<img src="images/male.svg" class="svg gender-icon ">
+							</div>
+							<div class="svg-container female">
+								<img src="images/female.svg" class="svg gender-icon">
+							</div>
+							<div class="svg-container mixed">
+								<img src="images/mixed.svg" class="svg gender-icon">
+							</div>
 						</div>
-						<div class="svg-container female">
-							<img src="images/female.svg" class="svg gender-icon">
-						</div>
-						<div class="svg-container mixed">
-							<img src="images/mixed.svg" class="svg gender-icon">
-						</div>
+					</div>
+
+					<div class="l-row">
+						<h2 class="form-label">Age</h2>
+						<div class="age-slider"></div>
+						<div id="min-handle-label" class="handle-label-container"></div>
+						<div id="max-handle-label" class="handle-label-container"></div>
 					</div>
 				</div>
 
-				<div class="l-row">
-					<h2 class="form-label">Age</h2>
-					<div class="age-slider"></div>
-					<div id="min-handle-label" class="arrow-box"></div>
-					<div id="max-handle-label" class="arrow-box"></div>
-				</div>
+				<div class="circular-btn play-btn">Play</div>
 			</div>
-
-			<div class="circular-btn play-btn">Play</div>
 		</div>
 	</div>
 

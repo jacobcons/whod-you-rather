@@ -34,6 +34,22 @@ $(window).on('load', function() {
 		}, 'xml');
 	});
 
+	$(".info-tooltip").tooltip({
+
+	});
+
+	function openToolTip() {
+		$(".info-tooltip").tooltip("open");
+		$(this).one("click", closeToolTip);
+	}
+
+	function closeToolTip() {
+		$(".info-tooltip").tooltip("close");
+		$(this).one("click", openToolTip);
+	}
+
+	$(".info-btn").one("click", openToolTip);
+
 
 	let gender = 0;
 	let defaultColor = "#000";
