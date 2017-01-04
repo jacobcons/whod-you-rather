@@ -13,7 +13,7 @@ gulp.task("scripts", function() {
 		.pipe(source("index.js"))
 		.pipe(buffer())
 		.pipe(uglify())
-		.pipe(gulp.dest("./static"));
+		.pipe(gulp.dest("./static/js"));
 });
 
 gulp.task("styles", function() {
@@ -21,7 +21,7 @@ gulp.task("styles", function() {
 			.pipe(less({
 				paths: __dirname + "/styles"
 			}))
-			.pipe(gulp.dest("./static"));
+			.pipe(gulp.dest("./static/css"));
 })
 
 gulp.task("watch", function() {

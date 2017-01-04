@@ -1,78 +1,191 @@
-let gender = 0;
-let defaultStyles = {
-	'backgroundColor': '#ccc'
-};
-let selectStyles = {
-	'backgroundColor': '#949494'
-};
+const game = require("./game.js");
 
-// change value of gender based on which icon is selected
-$(".male").click(function() {
-	gender = 1;
-})
-$('.female').click(function() {
-	gender = 2;
-})
-$('.mixed').click(function() {
-	gender = 3;
-})
+$(window).on('load', function() {
+	$('img.svg').each(function(){
+		var $img = $(this);
+		var imgID = $img.attr('id');
+		var imgClass = $img.attr('class');
+		var imgURL = $img.attr('src');
 
-$(".genderIcons").on("click", "div", function() {
-	$('.genderIcons').children("div").each(function() {
-		$(this).css(defaultStyles);
+		$.get(imgURL, function(data) {
+			// Get the SVG tag, ignore the rest
+			var $svg = $(data).find('svg');
+
+			// Add replaced image's ID to the new SVG
+			if(typeof imgID !== 'undefined') {
+				$svg = $svg.attr('id', imgID);
+			}
+			// Add replaced image's classes to the new SVG
+			if(typeof imgClass !== 'undefined') {
+				$svg = $svg.attr('class', imgClass+' replaced-svg');
+			}
+
+			// Remove any invalid XML tags as per http://validator.w3.org
+			$svg = $svg.removeAttr('xmlns:a');
+
+			// Check if the viewport is set, if the viewport is not set the SVG wont't scale.
+			if(!$svg.attr('viewBox') && $svg.attr('height') && $svg.attr('width')) {
+				$svg.attr('viewBox', '0 0 ' + $svg.attr('height') + ' ' + $svg.attr('width'))
+			}
+
+			// Replace image with new SVG
+			$img.replaceWith($svg);
+
+		}, 'xml');
 	});
 
-	$(this).css(selectStyles);
-});
 
-function validate(gender, minAge, maxAge) {
-	// boolean used so multiple error messages can be dispalyed before the function returns false
-	let isValid = 1;
+	let gender = 0;
+	let defaultColor = "#000";
+	let maleColor = "#bec0ff";
+	let femaleColor = "pink";
+	let mixedColor = "#e8e000";
 
-	// validate gender
-	switch (gender) {
-		case 1:
-		case 2:
-		case 3:
-			break;
-		default:
-			console.log("Please select a gender");
-			isValid = 0;
+	$(".male").hover(function() {
+		$(this).find("path").css("fill", maleColor);
+	}, function() {
+		if (gender != 2) {
+			$(this).find("path").css("fill", defaultColor);
+		}
+	});
+	$(".female").hover(function() {
+		$(this).find("path").css("fill", femaleColor);
+	}, function() {
+		if (gender != 1) {
+			$(this).find("path").css("fill", defaultColor);
+		}
+	});
+	$(".mixed").hover(function() {
+		$(this).find("path").css("fill", mixedColor);
+	}, function() {
+		if (gender != 3) {
+			$(this).find("path").css("fill", defaultColor);
+		}
+	});
+
+	// change value of gender based on which icon is selected
+	$(".male").click(function() {
+		gender = 2;
+		$(this).find("path").css("fill", maleColor);
+		$(".female > .gender-icon path").css("fill", defaultColor);
+		$(".mixed > .gender-icon path").css("fill", defaultColor);
+
+	});
+	$('.female').click(function() {
+		gender = 1;
+		$(this).find("path").css("fill", femaleColor);
+		$(".male > .gender-icon path").css("fill", defaultColor);
+		$(".mixed > .gender-icon path").css("fill", defaultColor);
+	});
+	$('.mixed').click(function() {
+		gender = 3;
+		$(this).find("path").css("fill", mixedColor);
+		$(".male > .gender-icon path").css("fill", defaultColor);
+		$(".female > .gender-icon path").css("fill", defaultColor);
+	});
+
+	function initaliseLabels() {
+		initaliseLabelValues();
+		initaliseLabelPositions();
 	}
 
-	// validate age slider
-	if (minAge > maxAge ||
-		minAge < 0 ||
-		maxAge > 65 ||
-		minAge !== parseInt(minAge, 10) ||
-		maxAge !== parseInt(maxAge, 10))
-	{
-		console.log("Please enter a valid range");
-		isValid = 0;
+	function initaliseLabelValues() {
+		writeToLabel("#min-handle-label", $(".age-slider").slider("values", 0));
+		writeToLabel("#max-handle-label", $(".age-slider").slider("values", 1));
 	}
 
-	switch(isValid) {
-		case 0:
-			return false;
-		case 1:
-			return true;
+	function initaliseLabelPositions() {
+		positionLabel(".ui-slider-handle:first","#min-handle-label");
+		positionLabel(".ui-slider-handle:last","#max-handle-label");
 	}
-}
 
-$(".playBtn").click(function() {
-	let minAge = parseInt($(".minAge").val(), 10);
-	let maxAge = parseInt($(".maxAge").val(), 10);
+	function writeToLabel(label, str) {
+		$(label).html(str);
+	}
 
-	if (validate(gender, minAge, maxAge)) {
-		$.ajax({
-			url: "/game",
-			data: {minAge: minAge, maxAge: maxAge, gender: gender},
-			success: (res) => {
-				const person = JSON.parse(res);
-				console.log(person);
-			}
+	function positionLabel(handle, label) {
+		let handlePosition = $(handle).offset();
+		let centreAdjustment = ($(handle).width() - $(label).width()) / 2;
+
+
+		$(label).css({
+			"left": handlePosition.left + centreAdjustment,
+			"top": handlePosition.top + 30
 		});
-	} else {
-		console.log("Invalid input");
 	}
+
+	$(".age-slider").slider({
+		range: true,
+		min: 18,
+		max: 65,
+		values: [18, 65],
+		slide: function(event, ui) {
+			let delay = function() {
+				let handleIndex = ui.handleIndex;
+				let label = handleIndex == 0 ? "#min-handle-label" : "#max-handle-label";
+
+				writeToLabel(label, ui.value);
+				positionLabel(ui.handle, label);
+			}
+
+			setTimeout(delay, 5);
+		}
+	});
+
+
+	initaliseLabels();
+	$(window).resize(function() {
+		initaliseLabelPositions();
+	});
+
+	function validate(gender, minAge, maxAge) {
+		// boolean used so multiple error messages can be dispalyed before the function returns false
+		let isValid = 1;
+
+		// validate gender
+		switch (gender) {
+			case 1:
+			case 2:
+			case 3:
+				break;
+			default:
+				console.log("Please select a gender");
+				isValid = 0;
+		}
+
+		// validate age slider
+		if (minAge > maxAge ||
+			minAge < 16 ||
+			maxAge > 65 ||
+			minAge !== parseInt(minAge, 10) ||
+			maxAge !== parseInt(maxAge, 10))
+		{
+			console.log("Please enter a valid range");
+			isValid = 0;
+		}
+
+		switch(isValid) {
+			case 0:
+				return false;
+			case 1:
+				return true;
+		}
+	}
+
+	$(".play-btn").click(function() {
+		let minAge = $(".age-slider").slider("values", 0);
+		let maxAge = $(".age-slider").slider("values", 1);
+
+		if (validate(gender, minAge, maxAge)) {
+			$.ajax({
+				url: "/game",
+				data: {minAge: minAge, maxAge: maxAge, gender: gender},
+				success: (res) => {
+					console.log(JSON.parse(res));
+				}
+			});
+		} else {
+			console.log("Invalid input");
+		}
+	});
 });

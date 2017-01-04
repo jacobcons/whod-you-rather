@@ -2,22 +2,51 @@
 <html>
 <head>
 	<title>Who'd you rather</title>
-	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="css/jquery-ui.min.css">
+	<link rel="stylesheet" href="css/styles.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-	<h1>Who'd you rather</h1>
-	<div class="genderIcons">
-		<div class="male">Male</div>
-		<div class="female">Female</div>
-		<div class="mixed">Male/Female</div>
+	<div class="wrapper">
+		<header class="clearfix">
+			<h1 class="logo">Who'd you rather?</h1>
+			<div class="circular-btn info-btn">Info</div>
+		</header>
 	</div>
 
-	Minimum age: <input type="text" class="minAge"></input>
-	Maximum age: <input type="text" class="maxAge"></input>
+	<div class="form-container">
+		<div class="wrapper">
+			<div class="white-box">
+				<div class="l-row">
+					<h2 class="form-label">Gender</h2>
 
-	<div class="btn playBtn">Play</div>
+					<div class="gender-icons">
+						<div class="svg-container male">
+							<img src="images/male.svg" class="svg gender-icon ">
+						</div>
+						<div class="svg-container female">
+							<img src="images/female.svg" class="svg gender-icon">
+						</div>
+						<div class="svg-container mixed">
+							<img src="images/mixed.svg" class="svg gender-icon">
+						</div>
+					</div>
+				</div>
+
+				<div class="l-row">
+					<h2 class="form-label">Age</h2>
+					<div class="age-slider"></div>
+					<div id="min-handle-label" class="arrow-box"></div>
+					<div id="max-handle-label" class="arrow-box"></div>
+				</div>
+			</div>
+
+			<div class="circular-btn play-btn">Play</div>
+		</div>
+	</div>
 
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<script src="index.js"></script>
+	<script src="js/jquery-ui.min.js"></script>
+	<script src="js/index.js"></script>
 </body>
 </html>
