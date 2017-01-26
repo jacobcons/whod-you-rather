@@ -46,10 +46,13 @@ module.exports = [
 			if (actors.length < 5) {
 				res.end("[]");
 			}
+			
+			actors = shuffleArray(actors);
+
 			if (actors.length > 20) {
 				actors = actors.slice(0,20); // a maximum of 20 actors is stored
 			}
-			actors = shuffleArray(actors);
+
 
 			res.end(JSON.stringify(actors));
 		});

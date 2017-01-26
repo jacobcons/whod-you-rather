@@ -13,5 +13,6 @@ app.set('views', __dirname + '/views');
 
 app.get("/", require("./routes/index.js"));
 app.get("/game", require("./routes/game.js"));
+app.get("/flag", require("./routes/flag.js"));
 
 app.listen(8080);

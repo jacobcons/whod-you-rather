@@ -203,12 +203,12 @@ $(window).on('load', function() {
 
 
 					let actors = JSON.parse(res);
-					countryFlags(actors);
-
-
-					renderActor(actors, "left");
-					renderActor(actors, "right");
-
+					getCountryFlags(actors)
+						.then(actors => {
+							console.log(actors);
+							renderActor(actors, "left");
+							renderActor(actors, "right");
+						});
 
 					let direction = "";
 					$(document).on("click", ".actor:not(.unclickable)", function() {
@@ -239,31 +239,53 @@ $(window).on('load', function() {
 	});
 });
 
-function countryFlags(actors) {
-	actors.forEach(a => {
-			//create src to flag for country of origin
+function getCountryFlags(actors) {
+	return new Promise((resolve, reject) => {
+		let flagSrc = "";
+		const absoluteFlagDirectory = "static/images/flags";
+		const relativeFlagDirectory = "images/flags/"; // images are referenced in index.html which is in static folder
 
-			a.country_flag = false; // won't display in template if value is false
-			if (a.hasOwnProperty("place_of_birth")) {
-				let flagSrc = "";
-				let flagInitPath = "images/";
-				let extension = ".png";
-				let placeOfBirth = a.place_of_birth.toLowerCase();
-				let countries = ["usa", "uk", "italy", "australia", "france", "germany", "israel", "south-africa", "spain", "canada"];
+		// returns object with array of country names and image file extension
+		$.ajax({
+			url: "/flag",
+			data: {path: absoluteFlagDirectory},
+			success: (fileInfo) => {
+				fileInfo = JSON.parse(fileInfo);
+				const countryNames = fileInfo.names;
+				const extension = fileInfo.extension;
 
-				for (let i = 0; i < countries.length; i++) {
-					let currentCountry = countries[i];
+				actors.forEach(actor => {
+						actor.country_flag = false; // actor's without a place_of_birth property will simply not have a flag displayed
+						if (actor.place_of_birth != null) {
+							actor.country_flag = flagImagePath(actor, countryNames, relativeFlagDirectory, extension);
+						}
+				});
 
-					//if country found in place of birth desc => relative image path to flag
-					if (placeOfBirth.indexOf(currentCountry) !== -1) {
-						flagSrc = flagInitPath + currentCountry + extension;
-						break;
-					}
-				}
-
-				a.country_flag = flagSrc;
+				return resolve(actors);
 			}
+		});
 	});
+}
+
+function flagImagePath(actor, countryNames, relativeFlagDirectory, extension) {
+	let flagPath = "";
+	let placeOfBirth = actor.place_of_birth.toLowerCase();
+	//united states, u.s, u.s.a, usa, us, u.s., u.s.a.
+	placeOfBirth = placeOfBirth.replace("united states", "usa"); //hacky temporay fix for other ways to say the usa
+	placeOfBirth = placeOfBirth.replace("u.s", "usa");
+	placeOfBirth = placeOfBirth.replace("united kingdom", "uk");
+
+	for (let i = 0; i < countryNames.length; i++) {
+		let countryName = countryNames[i];
+
+		// if country found in place of birth description => relative flagPath returned
+		if (placeOfBirth.indexOf(countryName) !== -1) {
+
+			flagPath = relativeFlagDirectory + countryName + extension;
+		}
+	}
+
+	return flagPath;
 }
 
 function renderActor(actors, direction) {

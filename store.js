@@ -18,7 +18,7 @@ got("https://api.themoviedb.org/3/person/popular?api_key=" + apiKey).then(res =>
 		return got("https://api.themoviedb.org/3/person/popular?" + queryString.stringify({ api_key: apiKey, page: pageN}));
 	}, 1, 300);
 
-	for (let pageN = 1; pageN <= 2; pageN++) {
+	for (let pageN = 1; pageN <= 20; pageN++) {
 			pages.push( page(pageN) );
 	}
 
