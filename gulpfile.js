@@ -8,7 +8,10 @@ const less = require("gulp-less");
 
 gulp.task("scripts", function() {
 	browserify("./scripts/index.js")
-		.transform("babelify", {presets: ["es2015"]})
+		.transform("babelify", {
+			presets: ["es2015"],
+			global: true
+		})
 		.bundle()
 		.pipe(source("index.js"))
 		.pipe(buffer())
@@ -25,7 +28,7 @@ gulp.task("styles", function() {
 })
 
 gulp.task("watch", function() {
-	gulp.watch("./scripts/*.js", ["scripts"]);
+	gulp.watch(["./scripts/*/*.js","./scripts/*.js"], ["scripts"]);
 	gulp.watch("./styles/*.less", ["styles"]);
 })
 

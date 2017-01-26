@@ -1,4 +1,6 @@
 const game = require("./game.js");
+const Greenman = require("@montyanderson/greenman");
+const actorView = require("./views/actorView.js");
 
 $(window).on('load', function() {
 	$('img.svg').each(function(){
@@ -34,7 +36,7 @@ $(window).on('load', function() {
 		}, 'xml');
 	});
 
-	$(".info-btn").tooltip({
+	$(".blue-btn").tooltip({
 		track: true
 	});
 
@@ -190,9 +192,45 @@ $(window).on('load', function() {
 				url: "/game",
 				data: {minAge: minAge, maxAge: maxAge, gender: gender},
 				success: (res) => {
-					console.log(JSON.parse(res));
-					$(".form-container").fadeOut(2200);
-					$("body").append("<pre>" + JSON.stringify(JSON.parse(res), null, 2) + "</pre>");
+					//hide form
+					$('html, body').animate({
+						scrollTop: '100px'
+					}, 2000);
+					$(".handle-label-container").hide();
+					$(".form-container").fadeOut(1200, () => {
+						$(".actor-container").fadeIn(400);
+					});
+
+
+					let actors = JSON.parse(res);
+					countryFlags(actors);
+
+
+					renderActor(actors, "left");
+					renderActor(actors, "right");
+
+
+					let direction = "";
+					$(document).on("click", ".actor:not(.unclickable)", function() {
+						var $this = $(this).addClass("unclickable");
+
+						if ($(this).data("direction") == "left") {
+							direction = "right"
+						} else {
+							direction = "left";
+						}
+
+						slideOut(direction, () => {
+							if (actors.length > 0) {
+								renderActor(actors, direction);
+								slideIn(direction, () => {
+									$this.removeClass("unclickable");
+								});
+							} else {
+								gameComplete($(this).data("direction"));
+							}
+						});
+					});
 				}
 			});
 		} else {
@@ -200,3 +238,53 @@ $(window).on('load', function() {
 		}
 	});
 });
+
+function countryFlags(actors) {
+	actors.forEach(a => {
+			//create src to flag for country of origin
+
+			a.country_flag = false; // won't display in template if value is false
+			if (a.hasOwnProperty("place_of_birth")) {
+				let flagSrc = "";
+				let flagInitPath = "images/";
+				let extension = ".png";
+				let placeOfBirth = a.place_of_birth.toLowerCase();
+				let countries = ["usa", "uk", "italy", "australia", "france", "germany", "israel", "south-africa", "spain", "canada"];
+
+				for (let i = 0; i < countries.length; i++) {
+					let currentCountry = countries[i];
+
+					//if country found in place of birth desc => relative image path to flag
+					if (placeOfBirth.indexOf(currentCountry) !== -1) {
+						flagSrc = flagInitPath + currentCountry + extension;
+						break;
+					}
+				}
+
+				a.country_flag = flagSrc;
+			}
+	});
+}
+
+function renderActor(actors, direction) {
+	//render first actor in array and then remove that actor from array
+	actorView.render({actor: actors[0], direction: direction});
+	actors.shift();
+}
+
+function slideOut(direction, cb) {
+		$('.actor[data-direction="'+direction+'"').stop().animate({
+			[direction]: '-150%'
+	}, 400, cb).delay(1000);
+}
+
+function slideIn(direction, cb) {
+	$('.actor[data-direction="'+direction+'"').stop().animate({
+		[direction]: '0%'
+	}, 400, cb);
+}
+
+function gameComplete(direction) {
+	$(".actor-divider").hide();
+	//show replay options
+}

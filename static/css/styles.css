@@ -10,6 +10,7 @@ body {
   font-family: nexa, sans-serif;
   font-size: 100%;
   margin: 0;
+  overflow-x: hidden;
 }
 .l-row {
   margin-bottom: 40px;
@@ -34,12 +35,6 @@ body {
   font-family: lust;
   font-size: 2.3rem;
 }
-.circular-btn:hover {
-  cursor: pointer;
-  -webkit-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
-  box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
-}
 .white-box {
   background-color: #fff;
   border-radius: 5px;
@@ -55,22 +50,21 @@ body {
   display: inline-block;
   color: #242222;
 }
-.info-btn {
+.blue-btn {
   background-color: #2d2e55;
   color: #fff;
   width: 100px;
   height: 100px;
   line-height: 100px;
-  font-size: 2.3rem;
   position: relative;
 }
-header .info-btn {
+.info-btn {
   float: right;
+  font-size: 2.3em;
 }
 .form-container {
   background-color: #2e2e32;
-  padding-top: 80px;
-  height: 100vh;
+  padding: 95px 0;
 }
 .svg-container {
   display: inline-block;
@@ -98,6 +92,12 @@ header .info-btn {
   height: 125px;
   line-height: 125px;
   font-size: 2.55rem;
+}
+.play-btn:hover {
+  cursor: pointer;
+  -webkit-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.5);
 }
 .handle-label-container {
   position: relative;
@@ -132,6 +132,91 @@ header .info-btn {
   position: absolute;
   text-align: center;
   line-height: 44px;
+}
+.actor-container {
+  display: none;
+  border-bottom: 30vh solid #2e2e32;
+  padding-bottom: 85px;
+}
+.actor {
+  width: 37%;
+  float: left;
+  position: relative;
+}
+.actor-divider {
+  margin-top: 300px;
+  width: 26%;
+  float: left;
+  text-align: center;
+  font-size: 1rem;
+}
+.question-mark-container {
+  margin: 0 auto;
+  font-size: 3.6em;
+  width: 75px;
+  height: 75px;
+  line-height: 75px;
+}
+.question-mark {
+  position: relative;
+  left: -2px;
+  top: 3px;
+}
+.one-liner {
+  margin-bottom: 10px;
+}
+.one-liner > h2 {
+  font-size: 1.83em;
+  display: inline;
+}
+.country-flag {
+  position: relative;
+  top: 4px;
+  left: 10px;
+}
+.profile-image {
+  max-width: 100%;
+}
+.known-for > h2 {
+  font-size: 1.7em;
+}
+.poster-image {
+  display: inline-block;
+  max-width: 32%;
+  padding: 0 12px 12px 0;
+  box-sizing: border-box;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+@media (max-width: 600px) {
+  .actor {
+    font-size: .7rem;
+  }
+  .one-liner > h2 {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .country-flag {
+    position: static;
+  }
+  .actor-divider {
+    margin-top: 175px;
+  }
+  .question-mark-container {
+    margin: 0 auto;
+    font-size: 2em;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+  }
+  .poster-image {
+    display: inline-block;
+    max-width: 49%;
+    padding: 0;
+  }
 }
 @media (max-width: 460px) {
   .form-label {

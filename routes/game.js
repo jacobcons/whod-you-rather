@@ -16,7 +16,7 @@ function shuffleArray(a) {
 	let n = a.length;
 
 	for (let i = n-1; i > 0; i--) {
-		j = Math.floor(Math.random() % (i+1));
+		j = Math.floor(Math.random() * (i+1));
 
 		let temp = a[j];
 		a[j] = a[i];
@@ -31,6 +31,11 @@ module.exports = [
 		minAge = req.query.minAge;
 		maxAge = req.query.maxAge;
 		gender = req.query.gender;
+
+		if (maxAge == 100) {
+			maxAge = "+inf"; //Include actors 100 or older
+		}
+
 		filterByAge(minAge, maxAge).then(actors => {
 			actors = actors.map(actor => JSON.parse(actor));
 
@@ -42,9 +47,9 @@ module.exports = [
 				res.end("[]");
 			}
 			if (actors.length > 20) {
-				actors = shuffleArray(actors);
 				actors = actors.slice(0,20); // a maximum of 20 actors is stored
 			}
+			actors = shuffleArray(actors);
 
 			res.end(JSON.stringify(actors));
 		});
