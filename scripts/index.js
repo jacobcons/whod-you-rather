@@ -1,9 +1,9 @@
 const game = require("./game.js");
-const Greenman = require("@montyanderson/greenman");
-const actorView = require("./views/actorView.js");
+const errorMsg = require("./error-message.js");
+let actors = exports.actors;
 
 $(window).on('load', function() {
-	$('img.svg').each(function(){
+	$('img.svg').each(function() {
 		var $img = $(this);
 		var imgID = $img.attr('id');
 		var imgClass = $img.attr('class');
@@ -142,7 +142,6 @@ $(window).on('load', function() {
 		}
 	});
 
-
 	initaliseLabels();
 	$(window).resize(function() {
 		initaliseLabelPositions();
@@ -159,7 +158,7 @@ $(window).on('load', function() {
 			case 3:
 				break;
 			default:
-				console.log("Please select a gender");
+				errorMsg("Please select a gender");
 				isValid = 0;
 		}
 
@@ -170,7 +169,7 @@ $(window).on('load', function() {
 			minAge !== parseInt(minAge, 10) ||
 			maxAge !== parseInt(maxAge, 10))
 		{
-			console.log("Please enter a valid range");
+			errorMsg("Please enter a valid minimum and maximum age");
 			isValid = 0;
 		}
 
@@ -182,131 +181,42 @@ $(window).on('load', function() {
 		}
 	}
 
-	$(".play-btn").click(function() {
+	$(document).on("click", ".play-btn:not(.unclickable)", function() {
+		let $this = $(this);
+		$this.addClass("unclickable");
+
+
 		let minAge = $(".age-slider").slider("values", 0);
 		let maxAge = $(".age-slider").slider("values", 1);
 
 		if (validate(gender, minAge, maxAge)) {
-			$(this).off("click");
+			exports.gender = gender;
+			exports.minAge = minAge;
+			exports.maxAge = maxAge;
+
 			$.ajax({
 				url: "/game",
 				data: {minAge: minAge, maxAge: maxAge, gender: gender},
 				success: (res) => {
-					//hide form
+					if (res == "[]") {
+						$this.removeClass("unclickable");
+						errorMsg("Sorry but not enough actors meet your criteria");
+						return true;
+					}
+					//scroll to the top and hide form
 					$('html, body').animate({
 						scrollTop: '100px'
 					}, 2000);
 					$(".handle-label-container").hide();
-					$(".form-container").fadeOut(1200, () => {
-						$(".actor-container").fadeIn(400);
-					});
+					$(".form-container").fadeOut(1200);
 
-
-					let actors = JSON.parse(res);
-					getCountryFlags(actors)
-						.then(actors => {
-							console.log(actors);
-							renderActor(actors, "left");
-							renderActor(actors, "right");
-						});
-
-					let direction = "";
-					$(document).on("click", ".actor:not(.unclickable)", function() {
-						var $this = $(this).addClass("unclickable");
-
-						if ($(this).data("direction") == "left") {
-							direction = "right"
-						} else {
-							direction = "left";
-						}
-
-						slideOut(direction, () => {
-							if (actors.length > 0) {
-								renderActor(actors, direction);
-								slideIn(direction, () => {
-									$this.removeClass("unclickable");
-								});
-							} else {
-								gameComplete($(this).data("direction"));
-							}
-						});
-					});
+					game.initGame(res);
+					game.coreGame();
 				}
 			});
 		} else {
+			$(this).removeClass("unclickable");
 			console.log("Invalid input");
 		}
 	});
 });
-
-function getCountryFlags(actors) {
-	return new Promise((resolve, reject) => {
-		let flagSrc = "";
-		const absoluteFlagDirectory = "static/images/flags";
-		const relativeFlagDirectory = "images/flags/"; // images are referenced in index.html which is in static folder
-
-		// returns object with array of country names and image file extension
-		$.ajax({
-			url: "/flag",
-			data: {path: absoluteFlagDirectory},
-			success: (fileInfo) => {
-				fileInfo = JSON.parse(fileInfo);
-				const countryNames = fileInfo.names;
-				const extension = fileInfo.extension;
-
-				actors.forEach(actor => {
-						actor.country_flag = false; // actor's without a place_of_birth property will simply not have a flag displayed
-						if (actor.place_of_birth != null) {
-							actor.country_flag = flagImagePath(actor, countryNames, relativeFlagDirectory, extension);
-						}
-				});
-
-				return resolve(actors);
-			}
-		});
-	});
-}
-
-function flagImagePath(actor, countryNames, relativeFlagDirectory, extension) {
-	let flagPath = "";
-	let placeOfBirth = actor.place_of_birth.toLowerCase();
-	//united states, u.s, u.s.a, usa, us, u.s., u.s.a.
-	placeOfBirth = placeOfBirth.replace("united states", "usa"); //hacky temporay fix for other ways to say the usa
-	placeOfBirth = placeOfBirth.replace("u.s", "usa");
-	placeOfBirth = placeOfBirth.replace("united kingdom", "uk");
-
-	for (let i = 0; i < countryNames.length; i++) {
-		let countryName = countryNames[i];
-
-		// if country found in place of birth description => relative flagPath returned
-		if (placeOfBirth.indexOf(countryName) !== -1) {
-
-			flagPath = relativeFlagDirectory + countryName + extension;
-		}
-	}
-
-	return flagPath;
-}
-
-function renderActor(actors, direction) {
-	//render first actor in array and then remove that actor from array
-	actorView.render({actor: actors[0], direction: direction});
-	actors.shift();
-}
-
-function slideOut(direction, cb) {
-		$('.actor[data-direction="'+direction+'"').stop().animate({
-			[direction]: '-150%'
-	}, 400, cb).delay(1000);
-}
-
-function slideIn(direction, cb) {
-	$('.actor[data-direction="'+direction+'"').stop().animate({
-		[direction]: '0%'
-	}, 400, cb);
-}
-
-function gameComplete(direction) {
-	$(".actor-divider").hide();
-	//show replay options
-}

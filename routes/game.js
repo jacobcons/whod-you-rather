@@ -28,9 +28,9 @@ function shuffleArray(a) {
 
 module.exports = [
 	(req, res) => {
-		minAge = req.query.minAge;
-		maxAge = req.query.maxAge;
-		gender = req.query.gender;
+		let minAge = req.query.minAge;
+		let maxAge = req.query.maxAge;
+		let gender = req.query.gender;
 
 		if (maxAge == 100) {
 			maxAge = "+inf"; //Include actors 100 or older
@@ -46,13 +46,12 @@ module.exports = [
 			if (actors.length < 5) {
 				res.end("[]");
 			}
-			
+
 			actors = shuffleArray(actors);
 
 			if (actors.length > 20) {
 				actors = actors.slice(0,20); // a maximum of 20 actors is stored
 			}
-
 
 			res.end(JSON.stringify(actors));
 		});

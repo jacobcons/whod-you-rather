@@ -7,59 +7,55 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-	<div class="wrapper">
-		<header class="clearfix">
-			<a href="/"><h1 class="logo">Who'd you rather?</h1></a>
-			<div class="info-btn circular-btn blue-btn" title="Who'd you rather is a game where users must choose between the appearances of celebrities. Choose the gender(s) and age range of the people to be displayed below and hit play to begin.">Info</div>
-
-		</header>
-	</div>
-
-	<div class="actor-container clearfix">
+	<div class="js-container"><!-- confetti effect -->
 		<div class="wrapper">
-			<div class="actor" data-direction="left"></div>
-			<div class="actor-divider">
-				<div class="question-mark-container circular-btn blue-btn"><span class="question-mark">?</span></div>
-			</div>
-			<div class="actor" data-direction="right"></div>
+			<header class="clearfix">
+				<a href="/"><h1 class="logo">Who'd you rather?</h1></a>
+				<div class="info-btn circular-btn blue-btn" title="Who'd you rather is a game where users must choose between the appearances of celebrities. Choose the gender(s) and age range of the people to be displayed below and hit play to begin.">Info</div>
+
+			</header>
 		</div>
-	</div>
 
-	<div class="form-container">
-		<div class="wrapper">
-			<div class="form">
-				<div class="white-box">
-					<div class="l-row">
-						<h2 class="form-label">Gender</h2>
+		<div class="actor-container"></div>
 
-						<div class="gender-icons">
-							<div class="svg-container male">
-								<img src="images/male.svg" class="svg gender-icon ">
-							</div>
-							<div class="svg-container female">
-								<img src="images/female.svg" class="svg gender-icon">
-							</div>
-							<div class="svg-container mixed">
-								<img src="images/mixed.svg" class="svg gender-icon">
+		<div class="form-container">
+			<div class="wrapper">
+				<div class="form">
+					<div class="white-box">
+						<div class="l-row">
+							<h2 class="form-label">Gender</h2>
+
+							<div class="gender-icons">
+								<div class="svg-container male">
+									<img src="images/male.svg" class="svg gender-icon ">
+								</div>
+								<div class="svg-container female">
+									<img src="images/female.svg" class="svg gender-icon">
+								</div>
+								<div class="svg-container mixed">
+									<img src="images/mixed.svg" class="svg gender-icon">
+								</div>
 							</div>
 						</div>
+
+						<div class="l-row">
+							<h2 class="form-label">Age</h2>
+							<div class="age-slider"></div>
+							<div id="min-handle-label" class="handle-label-container"></div>
+							<div id="max-handle-label" class="handle-label-container"></div>
+						</div>
+
+						<p class="error-message">Error</p>
 					</div>
 
-					<div class="l-row">
-						<h2 class="form-label">Age</h2>
-						<div class="age-slider"></div>
-						<div id="min-handle-label" class="handle-label-container"></div>
-						<div id="max-handle-label" class="handle-label-container"></div>
-					</div>
+					<div class="circular-btn play-btn">Play</div>
 				</div>
-
-				<div class="circular-btn play-btn">Play</div>
 			</div>
 		</div>
-	</div>
 
-	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<script src="js/jquery-ui.min.js"></script>
-	<script src="js/index.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
+		<script src="js/index.js"></script>
+	</div>
 </body>
 </html>
