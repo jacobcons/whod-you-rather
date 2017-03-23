@@ -15,6 +15,7 @@ const initGame = exports.initGame = (res) => {
 			return actors;
 		})
 		.then(actors => {
+			//render in the left and right actor
 			renderActor(actors, "left", {left: 0, top: 0}).then(d => {
 				$(".actor[data-direction='left']").show();
 			});
@@ -22,7 +23,7 @@ const initGame = exports.initGame = (res) => {
 				$(".actor[data-direction='right']").show();
 			})
 			$(".actor-container").fadeIn(100);
-			//scroll to the top and hide form
+			//scroll so actors are in view
 			$('html, body').animate({
 				scrollTop: $(".actor-container").offset().top - 20
 			}, 500);
@@ -32,7 +33,7 @@ const initGame = exports.initGame = (res) => {
 const coreGame = exports.coreGame = () => {
 	let direction = ""; //holds the direction of the actor not selected
 	$(document).on("click", ".actor:not(.unclickable)", function() {
-		$(this).addClass("unclickable");
+		$(this).addClass("unclickable"); // prevents spam clicking
 
 		if ($(this).data("direction") == "left") {
 			direction = "right"
@@ -42,15 +43,17 @@ const coreGame = exports.coreGame = () => {
 		// read in position of actor before it's slid out
 		const position = $('.actor[data-direction="' + direction + '"]').find(".profile-image").offset();
 
-
+		// slide out -> render -> slide in actor
 		slideOut(direction, () => {
 			if (actors.length > 0) {
+				// if there are still actors remaining
 				renderActor(actors, direction, position).then(direction => {
 					slideIn(direction, () => {
-						$(this).removeClass("unclickable");
+						$(this).removeClass("unclickable"); // makes actor clickable again
 					});
 				})
 			} else {
+				// all actors have been displayed
 				gameComplete(direction);
 			}
 		});
@@ -117,6 +120,7 @@ function renderActor(actors, direction, position) {
 		let actorHeight = $(selectedActor).find(".profile-image").height();
 		let loadHeight = $(".loading").height();
 
+		// display loading gif whilst actor is rendering
 		$(".loading").css({
 			left: position.left + (actorWidth / 2) - (loadWidth / 2),
 			top: position.top + (actorHeight / 2) - (loadHeight / 2),
@@ -125,7 +129,7 @@ function renderActor(actors, direction, position) {
 
 		$(selectedActor).html(renderedActor).promise().done(() => {
 			$(".loading").hide();
-			actors.shift();
+			actors.shift(); // remove actor just displayed from array
 			return resolve(direction);
 		});
 	});
@@ -153,7 +157,7 @@ function gameComplete(direction) {
 	$(".replay").fadeIn(1200);
 	confetti();
 
-	// replay options
+	// replay option click events
 	$(".different-options").click(() => {
 		window.location.href = "/";
 	});

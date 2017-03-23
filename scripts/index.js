@@ -51,6 +51,7 @@ $(window).on('load', function() {
 		$(this).find("path").css("fill", maleColor);
 	}, function() {
 		if (gender != 2) {
+			// change back to default color given that this gender hasn't been clicked
 			$(this).find("path").css("fill", defaultColor);
 		}
 	});
@@ -58,6 +59,7 @@ $(window).on('load', function() {
 		$(this).find("path").css("fill", femaleColor);
 	}, function() {
 		if (gender != 1) {
+			// change back to default color given that this gender hasn't been clicked
 			$(this).find("path").css("fill", defaultColor);
 		}
 	});
@@ -65,6 +67,7 @@ $(window).on('load', function() {
 		$(this).find("path").css("fill", mixedColor);
 	}, function() {
 		if (gender != 3) {
+			// change back to default color given that this gender hasn't been clicked
 			$(this).find("path").css("fill", defaultColor);
 		}
 	});
@@ -72,6 +75,7 @@ $(window).on('load', function() {
 	// change value of gender based on which icon is selected
 	$(".male").click(function() {
 		gender = 2;
+		// set color of clicked icon and reset colors of other icons
 		$(this).find("path").css("fill", maleColor);
 		$(".female > .gender-icon path").css("fill", defaultColor);
 		$(".mixed > .gender-icon path").css("fill", defaultColor);
@@ -79,12 +83,14 @@ $(window).on('load', function() {
 	});
 	$('.female').click(function() {
 		gender = 1;
+		// set color of clicked icon and reset colors of other icons
 		$(this).find("path").css("fill", femaleColor);
 		$(".male > .gender-icon path").css("fill", defaultColor);
 		$(".mixed > .gender-icon path").css("fill", defaultColor);
 	});
 	$('.mixed').click(function() {
 		gender = 3;
+		// set color of clicked icon and reset colors of other icons
 		$(this).find("path").css("fill", mixedColor);
 		$(".male > .gender-icon path").css("fill", defaultColor);
 		$(".female > .gender-icon path").css("fill", defaultColor);
@@ -109,14 +115,15 @@ $(window).on('load', function() {
 		if (str != "100") {
 			$(label).html(str);
 		} else {
+			// when slider is 100 show that ages over 100 are also included
 			$(label).html("100+");
 		}
 	}
 
 	function positionLabel(handle, label) {
+		// positions label below slider handle
 		let handlePosition = $(handle).offset();
 		let centreAdjustment = ($(handle).width() - $(label).width()) / 2;
-
 
 		$(label).css({
 			"left": handlePosition.left + centreAdjustment,
@@ -131,6 +138,7 @@ $(window).on('load', function() {
 		values: [18, 100],
 		slide: function(event, ui) {
 			let delay = function() {
+				//update label value and re position it whenever handle is moved
 				let handleIndex = ui.handleIndex;
 				let label = handleIndex == 0 ? "#min-handle-label" : "#max-handle-label";
 
@@ -183,8 +191,7 @@ $(window).on('load', function() {
 
 	$(document).on("click", ".play-btn:not(.unclickable)", function() {
 		let $this = $(this);
-		$this.addClass("unclickable");
-
+		$this.addClass("unclickable"); // prevents spam clicking
 
 		let minAge = $(".age-slider").slider("values", 0);
 		let maxAge = $(".age-slider").slider("values", 1);
@@ -206,13 +213,14 @@ $(window).on('load', function() {
 					$(".info-btn").prop("title", "Who'd you rather is a game where users must choose between celebrities. Click the actor you prefer below.");
 					$(".handle-label-container").hide();
 					$(".form-container").fadeOut(500, () => {
+						// everything is valid then game can begin
 						game.initGame(res);
 						game.coreGame();
 					});
 				}
 			});
 		} else {
-			$(this).removeClass("unclickable");
+			$(this).removeClass("unclickable"); // makes button clickable again if form data is invalid
 			console.log("Invalid input");
 		}
 	});
