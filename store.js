@@ -59,6 +59,7 @@ got("https://api.themoviedb.org/3/person/popular?api_key=" + apiKey).then(res =>
 				let birthDate = new Date(actor.birthday);
 				actor.age = Math.floor((currentDate - birthDate) / msInYear);
 				actor.known_for = pages[pageN][actorN].known_for; // Store details from person/popular endpoint in actorPages array
+				console.log(actor);
 				multi.set(actor.id, JSON.stringify(actor));
 				multi.zadd("actors", actor.age, actor.id);
 				//redis

@@ -1,6 +1,7 @@
-const Greenman = require("@montyanderson/greenman");
+const Hogan = require("hogan.js");
 
-const actorContainer = module.exports = new Greenman(`
+const template =
+`
 	{{#actor}}
 		<div class="one-liner">
 			<h2>{{name}}, {{age}}</h2> {{#country_flag}}<img class="country-flag" src="{{country_flag}}">{{/country_flag}}
@@ -16,8 +17,7 @@ const actorContainer = module.exports = new Greenman(`
 			{{/known_for}}
 		</div>
 	{{/actor}}
-	`,
-	(renderedActor, locals) => {
-	
-	$('.actor[data-direction="'+locals.direction+'"').html(renderedActor);
-});
+`;
+let compiledTemplate = Hogan.compile(template)
+
+module.exports = compiledTemplate;

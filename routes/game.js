@@ -53,6 +53,9 @@ module.exports = [
 				actors = actors.slice(0,20); // a maximum of 20 actors is stored
 			}
 
+			actors.forEach(actor => {
+				console.log(actor.age);
+			})
 			res.end(JSON.stringify(actors));
 		});
 	}

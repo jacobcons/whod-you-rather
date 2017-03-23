@@ -1,4 +1,4 @@
-const Greenman = require("@montyanderson/greenman");
+const Hogan = require("hogan.js");
 const actorView = require("./views/actorView.js");
 const actorContainer = require("./views/actorContainer.js");
 const errorMsg = require("./error-message.js");
@@ -7,7 +7,6 @@ const confetti = require("./confetti.js");
 let actors = references.actors;
 
 const initGame = exports.initGame = (res) => {
-	//Render first two actors and display them
 	actors = JSON.parse(res);
 
 	getCountryFlags(actors)
@@ -16,9 +15,17 @@ const initGame = exports.initGame = (res) => {
 			return actors;
 		})
 		.then(actors => {
-			renderActor(actors, "left");
-			renderActor(actors, "right");
-			$(".actor-container").fadeIn(400);
+			renderActor(actors, "left", {left: 0, top: 0}).then(d => {
+				$(".actor[data-direction='left']").show();
+			});
+			renderActor(actors, "right", {left: 0, top: 0}).then(d => {
+				$(".actor[data-direction='right']").show();
+			})
+			$(".actor-container").fadeIn(100);
+			//scroll to the top and hide form
+			$('html, body').animate({
+				scrollTop: $(".actor-container").offset().top - 20
+			}, 500);
 		});
 }
 
@@ -26,20 +33,23 @@ const coreGame = exports.coreGame = () => {
 	let direction = ""; //holds the direction of the actor not selected
 	$(document).on("click", ".actor:not(.unclickable)", function() {
 		$(this).addClass("unclickable");
-		console.log(actors);
 
 		if ($(this).data("direction") == "left") {
 			direction = "right"
 		} else {
 			direction = "left";
 		}
+		// read in position of actor before it's slid out
+		const position = $('.actor[data-direction="' + direction + '"]').find(".profile-image").offset();
+
 
 		slideOut(direction, () => {
 			if (actors.length > 0) {
-				renderActor(actors, direction);
-				slideIn(direction, () => {
-					$(this).removeClass("unclickable");
-				});
+				renderActor(actors, direction, position).then(direction => {
+					slideIn(direction, () => {
+						$(this).removeClass("unclickable");
+					});
+				})
 			} else {
 				gameComplete(direction);
 			}
@@ -76,6 +86,7 @@ function getCountryFlags(actors) {
 }
 
 function flagImagePath(actor, countryNames, relativeFlagDirectory, extension) {
+	let index = 0;
 	let flagPath = "";
 	let placeOfBirth = actor.place_of_birth.toLowerCase();
 	//united states, u.s, u.s.a, usa, us, u.s., u.s.a.
@@ -87,31 +98,49 @@ function flagImagePath(actor, countryNames, relativeFlagDirectory, extension) {
 		let countryName = countryNames[i];
 
 		// if country found in place of birth description => relative flagPath returned
-		if (placeOfBirth.indexOf(countryName) !== -1) {
-
+		// place of birth description can have multiple country names so it
+		if (placeOfBirth.indexOf(countryName) !== -1 && placeOfBirth.indexOf(countryName) > index) {
 			flagPath = relativeFlagDirectory + countryName + extension;
+			index = placeOfBirth.indexOf(countryName);
 		}
 	}
 
 	return flagPath;
 }
 
-function renderActor(actors, direction) {
-	//render first actor in array and then remove that actor from array
-	actorView.render({actor: actors[0], direction: direction});
-	actors.shift();
+function renderActor(actors, direction, position) {
+	return new Promise((resolve, reject) => {
+		let renderedActor = actorView.render({actor: actors[0]});
+		let selectedActor = '.actor[data-direction="' + direction + '"]';
+		let actorWidth = $(selectedActor).find(".profile-image").width();
+		let loadWidth = $(".loading").width();
+		let actorHeight = $(selectedActor).find(".profile-image").height();
+		let loadHeight = $(".loading").height();
+
+		$(".loading").css({
+			left: position.left + (actorWidth / 2) - (loadWidth / 2),
+			top: position.top + (actorHeight / 2) - (loadHeight / 2),
+			display: "block"
+		});
+
+		$(selectedActor).html(renderedActor).promise().done(() => {
+			$(".loading").hide();
+			actors.shift();
+			return resolve(direction);
+		});
+	});
 }
 
 function slideOut(direction, cb) {
 		$('.actor[data-direction="'+direction+'"').stop().animate({
 			[direction]: '-150%'
-	}, 400, cb).delay(1000);
+	}, 300, cb).delay(1000);
 }
 
 function slideIn(direction, cb) {
 	$('.actor[data-direction="'+direction+'"').stop().animate({
 		[direction]: '0%'
-	}, 400, cb);
+	}, 300, cb);
 }
 
 function gameComplete(direction) {

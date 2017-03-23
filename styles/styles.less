@@ -3,7 +3,10 @@
 @small-btn-size: 75px;
 @gender-icon-width: 5.4em;
 @handle-label-container-size: 44px;
-@handle-label-container-color: #fff;
+@actor-width: 37%;
+@white: #fff;
+@import "confetti.less";
+@import "loader.less";
 
 @font-face {
 	font-family: lust;
@@ -116,7 +119,7 @@ body {
 }
 .handle-label-container {
 	position: relative;
-	background: @handle-label-container-color;
+	background: @white;
 	width: @handle-label-container-size;
 	height: @handle-label-container-size;
 	border-radius: 7px;
@@ -134,7 +137,7 @@ body {
 	position: absolute;
 	pointer-events: none;
 	border-color: rgba(255, 255, 255, 0);
-	border-bottom-color: @handle-label-container-color;
+	border-bottom-color: @white;
 	border-width: (@handle-label-container-size / 4);
 	margin-left: (@handle-label-container-size / -4);
 	z-index: 2;
@@ -162,9 +165,10 @@ body {
 	padding-bottom: 85px;
 }
 .actor {
-	width: 37%;
+	width: @actor-width;
 	float: left;
 	position: relative;
+	display: none;
 
 	&:hover {
 		cursor: pointer;
@@ -175,7 +179,7 @@ body {
 }
 .actor-divider {
 	margin-top: 300px;
-	width: 26%;
+	width: 100 - @actor-width * 2;
 	float: left;
 	text-align: center;
 	font-size: 1rem;
@@ -198,11 +202,11 @@ body {
 .one-liner > h2 {
 	font-size: 1.83em;
 	display: inline;
+	margin-right: 10px;
 }
 .country-flag {
 	position: relative;
 	top: 4px;
-	left: 10px;
 	width: 32px;
 }
 .profile-image {
@@ -252,53 +256,9 @@ body {
 .replay-btn:nth-child(3n) {
 	background-color: #2d2e55;
 }
-// confetti
-@keyframes confetti-slow {
-  0% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0); }
-
-  100% { transform: translate3d(25px, 200vh, 0) rotateX(360deg) rotateY(180deg); }
-}
-
-@keyframes confetti-medium {
-  0% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0); }
-
-  100% { transform: translate3d(100px, 200vh, 0) rotateX(100deg) rotateY(360deg); }
-}
-
-@keyframes confetti-fast {
-  0% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0); }
-
-  100% { transform: translate3d(-50px, 200vh, 0) rotateX(10deg) rotateY(250deg); }
-}
-
-.confetti-container {
-	pointer-events: none;
-  perspective: 700px;
-  position: absolute;
-  overflow: hidden;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-.confetti {
-  position: absolute;
-  z-index: 1;
-  top: -10px;
-  border-radius: 0%;
-
-  &--animation-slow {
-    animation: confetti-slow 2.25s linear 1 forwards;
-  }
-
-  &--animation-medium {
-    animation: confetti-medium 1.75s linear 1 forwards;
-  }
-
-  &--animation-fast {
-    animation: confetti-fast 1.25s linear 1 forwards;
-  }
+.loading {
+	display: none;
+	position: absolute;
 }
 
 @media (max-width: 715px) {
@@ -339,13 +299,16 @@ body {
 	.form-label {
 		font-size: 3em;
 	}
-	.logo {
-		display: block;
+	header {
+		font-size: .7rem;
 	}
 	.replay {
 		font-size: .6rem;
 	}
 	.poster-image {
 		max-width: 100%;
+	}
+	.loader {
+		width: 50px;
 	}
 }

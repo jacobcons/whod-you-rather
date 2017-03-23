@@ -203,15 +203,12 @@ $(window).on('load', function() {
 						errorMsg("Sorry but not enough actors meet your criteria");
 						return true;
 					}
-					//scroll to the top and hide form
-					$('html, body').animate({
-						scrollTop: '100px'
-					}, 2000);
+					$(".info-btn").prop("title", "Who'd you rather is a game where users must choose between celebrities. Click the actor you prefer below.");
 					$(".handle-label-container").hide();
-					$(".form-container").fadeOut(1200);
-
-					game.initGame(res);
-					game.coreGame();
+					$(".form-container").fadeOut(500, () => {
+						game.initGame(res);
+						game.coreGame();
+					});
 				}
 			});
 		} else {
